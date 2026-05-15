@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" /> -->
+    <style>
+        *{
+            margin: 0;
+            padding:0;
+        }
+        body{
+            background-color: rgb(224, 221, 221);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height:100vh;
+            flex-direction: column;
+        }
+        #editor{
+            width:80vw;
+            min-height:80vh;
+            background-color:white;
+            border:none;
+            box-shadow:0 0 10px rgba(6, 6, 6, 0.8);
+            padding:20px;
+            outline:none;
+        }
+        
+        #pop_up{
+            margin:0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="pop_up">
+        <button id="close">X</button>
+        <p id="error" style="color:red"></p>
+    </div>
+    <div id="editor" contenteditable="true"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- Include the Quill library -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script> -->
+
+    <script>
+
+        const socket= io();
+        const errorMssg=document.getElementById("error");
+        const editor=document.getElementById("editor");
+        let docId="69faf84afa67b0025f25044a";
+        let timer;
+        let isRemoteUpdate=false;
+        
+        // // Initialize Quill editor -->
+        // const quill = new Quill('#editor', {
+        //     theme: 'snow'
+        // });
+
+        //hiding pop-up
+        document.getElementById("close").addEventListener("click",()=>{
+            document.getElementById("pop_up").style.display = "none";
+        });
+
+        socket.emit("join-document",docId);
+
+        socket.emit("load-document",docId);
+        socket.on("load-content",(data)=>{
+            editor.innerHTML=data;
+        });
+        socket.on("receive-changes",(content)=>{
+            isRemoteUpdate=true;
+            editor.innerHTML=content;
+            isRemoteUpdate=false;
+        });
+
+        //400
+        socket.on("bad-request",(error)=>{
+            errorMssg.textContent="Something went wrong, try again!";
+            document.getElementById("pop_up").style.display = "";
+        });
+        //404
+        socket.on("not-found",(error)=>{
+            errorMssg.textContent="Not found!";
+            document.getElementById("pop_up").style.display = "";
+        })
+        //500
+        socket.on("server-error",(error)=>{
+            errorMssg.textContent="Connect after sometime!!";
+            document.getElementById("pop_up").style.display = "";
+        });
+        editor.addEventListener('input', () => {
+
+            if(isRemoteUpdate) return;
+            // realtime sync
+            socket.emit("send-changes", {
+                docId,
+                content: editor.innerHTML
+            });
+
+            // prevent multiple save timers
+            clearTimeout(timer);
+
+            // autosave
+            timer = setTimeout(() => {
+
+                socket.emit("auto-save", {
+                    docId,
+                    content: editor.innerHTML
+                });
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
