@@ -2,6 +2,10 @@
 
 A real-time document editor built with Node.js, Express, MongoDB, and Socket.io. This project demonstrates real-time document synchronization and persistence, allowing connected users to view and edit shared documents with changes broadcast across clients.
 
+## Live Demo
+
+🚀 **Try it now**: https://google-docs-lite-176a.onrender.com/
+
 ## Features
 
 - 📝 **Real-time Updates** - Changes made by one connected user are broadcast to other users viewing the same document using Socket.io
@@ -16,6 +20,7 @@ A real-time document editor built with Node.js, Express, MongoDB, and Socket.io.
 - **Database**: MongoDB with Mongoose ODM
 - **Real-time Communication**: Socket.io
 - **Environment Management**: dotenv
+- **Deployment**: Render
 
 ## Prerequisites
 
