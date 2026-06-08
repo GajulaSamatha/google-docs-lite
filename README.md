@@ -1,13 +1,13 @@
 # Google Docs Lite
 
-A lightweight, real-time collaborative document editor built with Node.js, Express, MongoDB, and Socket.io. Similar to Google Docs, this application allows multiple users to edit documents simultaneously with instant synchronization.
+A real-time document editor built with Node.js, Express, MongoDB, and Socket.io. This project demonstrates real-time document synchronization and persistence, allowing connected users to view and edit shared documents with changes broadcast across clients.
 
 ## Features
 
-- 📝 **Real-time Collaboration** - Multiple users can edit the same document simultaneously with live updates using WebSockets
-- 💾 **Auto-save** - Documents are automatically saved to the database as users edit
-- 🔗 **Document Management** - Create, retrieve, and update documents with ease
-- 🚀 **Fast Performance** - Lightweight stack optimized for quick document synchronization
+- 📝 **Real-time Updates** - Changes made by one connected user are broadcast to other users viewing the same document using Socket.io
+- 💾 **Auto-save** - Document changes are automatically persisted to MongoDB
+- 🔗 **Document Management** - Create, retrieve, and update documents
+- 🚀 **Lightweight Architecture** - Express, MongoDB, and Socket.io for efficient document synchronization
 - 🌐 **CORS Enabled** - Support for cross-origin requests
 
 ## Tech Stack
@@ -108,6 +108,15 @@ The server will run on `http://localhost:3000` (or the port specified in your `.
 - `not-found` - Error response when document is not found
 - `server-error` - Error response for server errors
 
+## How It Works
+
+1. **User connects** - Client connects via WebSocket and emits `load-document` event
+2. **Content loaded** - Server fetches document from MongoDB and sends initial content to client
+3. **Join room** - Client joins a Socket.io room identified by the document ID
+4. **User edits** - Client sends changes via `send-changes` event
+5. **Changes broadcast** - Server broadcasts changes to all other clients in the document room
+6. **Auto-save** - Changes are automatically persisted to MongoDB via the `auto-save` event
+
 ## Project Structure
 
 ```
@@ -119,14 +128,6 @@ google-docs-lite/
 ├── .env              # Environment variables (not included)
 └── README.md         # This file
 ```
-
-## How It Works
-
-1. **User connects** - Client connects via WebSocket and emits `load-document` event
-2. **Content loaded** - Server fetches document from MongoDB and sends content
-3. **User edits** - Client sends changes via `send-changes` event
-4. **Changes broadcasted** - Server broadcasts changes to other connected users in the same document room
-5. **Auto-save** - Periodically, client sends `auto-save` event to persist changes to the database
 
 ## Error Handling
 
@@ -141,10 +142,11 @@ The application handles various error scenarios:
 - [ ] User authentication and authorization
 - [ ] Document sharing and permissions
 - [ ] Presence indicators (show who's editing)
+- [ ] Operational Transform (OT) or CRDT for conflict resolution
 - [ ] Change history and version control
 - [ ] Rich text editing features
 - [ ] Comments and collaborative feedback
-- [ ] Real-time cursor positions
+- [ ] Cursor position tracking
 
 ## Contributing
 
@@ -160,4 +162,4 @@ For issues or questions, please open an issue on the GitHub repository.
 
 ---
 
-**Happy collaborating! 🎉**
+**Built to demonstrate real-time document synchronization using Socket.IO.** 🚀
