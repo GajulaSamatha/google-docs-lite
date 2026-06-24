@@ -14,6 +14,11 @@ app.use(express.static(__dirname + "/src"));
 const port= process.env.PORT || 3000;
 
 
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const cookieParser=require('cookie-parser');
+
+
 
 app.get('/',(req,res)=>{
     res.sendFile(__dirname + "/index.html");
