@@ -451,7 +451,6 @@
         socket.emit("load-document",docId);
         async function loadDocument() {
             const response = await fetch(`/document/${docId}`);
-            
             if(response.status==401){
                 window.location.href = "./login.html";
                 return;
