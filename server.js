@@ -268,6 +268,18 @@ app.get("/documents",auth,async(req,res)=>{
         return res.status(500).json({message:"Server Error!!"});
     }
 });
+
+app.post("/logout", (req, res) => {
+    res.cookie("token", token, {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production"
+    });
+
+    return res.status(200).json({
+        message: "Logged out successfully"
+    });
+});
 server.listen(port,()=>{
     console.log({message:"Server is running"});
 });

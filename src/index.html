@@ -463,6 +463,24 @@
         }
 
         loadDocument();
+
+        
+        document.getElementById("logoutBtn")
+        .addEventListener("click", async () => {
+
+            try {
+                const response = await fetch("/logout", {
+                    method: "POST"
+                });
+
+                if (response.ok) {
+                    window.location.href = "/login";
+                }
+            }
+            catch (error) {
+                alert("Logout failed");
+            }
+        });
         
         socket.on("receive-changes",(content)=>{
             isRemoteUpdate=true;
