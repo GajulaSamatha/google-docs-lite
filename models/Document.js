@@ -13,15 +13,9 @@ const DocumentSchema= new mongoose.Schema({
     content:{
         type:String,
         default:""
-    },
-    created_at:{
-        type:Date,
-        default:Date.now
-    },
-    updated_at:{
-        type:Date,
-        default:Date.now
     }
-
-});
+},
+    {
+        timestamps:true
+    });
 module.exports = mongoose.model('Document',DocumentSchema);

@@ -448,6 +448,9 @@
 
                 formMessage.className = "form_message success";
                 formMessage.textContent = data.message || "Registration details look good.";
+                setTimeout(() => {
+                    window.location.href = "/menu.html";
+                }, 800);
                 form.reset();
             })
             .catch((error) => {

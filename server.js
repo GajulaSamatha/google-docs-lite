@@ -10,10 +10,8 @@ const connectionString= process.env.MONGO_URI;
 mongoose.connect(connectionString).then(()=>{console.log("Connected");}).catch((err)=>{console.log("error",err);});
 
 const app= express();
-app.use(express.static(__dirname + "/src"));
 
 const port= process.env.PORT || 3000;
-
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -26,6 +24,7 @@ app.use(express.json());
 app.get('/',(req,res)=>{
     res.sendFile(__dirname + "/src/login.html");
 });
+app.use(express.static(__dirname + "/src"));
 
 app.post('/document',auth,async (req,res)=>{
     try{
