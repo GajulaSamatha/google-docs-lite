@@ -270,10 +270,8 @@ app.get("/documents",auth,async(req,res)=>{
 });
 
 app.post("/logout", (req, res) => {
-    res.cookie("token", token, {
-        httpOnly: true,
-        sameSite: "strict",
-        secure: process.env.NODE_ENV === "production"
+    res.clearCookie("token", {
+        httpOnly: true
     });
 
     return res.status(200).json({

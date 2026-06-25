@@ -470,14 +470,14 @@
                     </div>
                 </div>
                 <nav class="nav_actions" aria-label="Account actions">
-                    <a class="logout_btn" href="/login">
+                    <button class="logout_btn" id="logoutBtn">
                         <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M10 17l5-5-5-5"></path>
                             <path d="M15 12H3"></path>
                             <path d="M21 19V5a2 2 0 0 0-2-2h-6"></path>
                         </svg>
                         Logout
-                    </a>
+                    </button>
                 </nav>
             </header>
 
@@ -538,6 +538,23 @@
         </section>
     </main>
     <script>
+        document.getElementById("logoutBtn").addEventListener("click", async () => {
+
+            try {
+                const response = await fetch("/logout", {
+                    method: "POST"
+                });
+
+                if (response.ok) {
+                    window.location.href = "/login";
+                }
+            }
+            catch (error) {
+                alert("Logout failed");
+            }
+        });
+
+
         async function loadDocuments() {
             try {
                 const grid = document.getElementById("doc_grid");
