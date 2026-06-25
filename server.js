@@ -278,6 +278,12 @@ app.post("/logout", (req, res) => {
         message: "Logged out successfully"
     });
 });
+
+app.get('/auth', auth, (req,res)=>{
+    res.status(200).json({
+        authenticated: true
+    });
+});
 server.listen(port,()=>{
     console.log({message:"Server is running"});
 });

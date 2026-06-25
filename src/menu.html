@@ -538,6 +538,18 @@
         </section>
     </main>
     <script>
+        window.onload = async () => {
+            try{
+                const response = await fetch('/auth');
+
+                if(!response.ok){
+                    window.location.href = "/login";
+                }
+            }
+            catch(error){
+                window.location.href = "/login";
+            }
+        };
         document.getElementById("logoutBtn").addEventListener("click", async () => {
 
             try {
@@ -619,6 +631,7 @@
                         </div>
                     </div>
                 `;
+                window.location.href = "/login";
             }
         }
         async function createDocument(){
@@ -643,6 +656,7 @@
             if(response.ok){
                 window.location.href = "/index.html?id=" + data.newDoc._id;
             }
+            window.location.href = "/login";
         }
     </script>
 </body>
