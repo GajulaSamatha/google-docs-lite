@@ -41,6 +41,12 @@
         <button id="close">X</button>
         <p id="error" style="color:red"></p>
     </div>
+    <input
+        id="title"
+        type="text"
+        placeholder="Document Title"
+    />
+
     <div id="editor" contenteditable="true"></div>
     <script src="/socket.io/socket.io.js"></script>
     <!-- Include the Quill library -->
@@ -51,7 +57,13 @@
         const socket= io();
         const errorMssg=document.getElementById("error");
         const editor=document.getElementById("editor");
-        let docId="69faf84afa67b0025f25044a";
+        const params = new URLSearchParams(window.location.search);
+        const docId = params.get("id");
+
+        if(!docId){
+            alert("Document ID missing");
+            throw new Error("Document ID missing");
+        }
         let timer;
         let isRemoteUpdate=false;
         
@@ -66,11 +78,19 @@
         });
 
         socket.emit("join-document",docId);
+        
 
         socket.emit("load-document",docId);
-        socket.on("load-content",(data)=>{
-            editor.innerHTML=data;
-        });
+        async function loadDocument() {
+            const response = await fetch(`/document/${docId}`);
+            const doc = await response.json();
+
+            document.getElementById("title").value = doc.title;
+            editor.innerHTML = doc.content;
+        }
+
+        loadDocument();
+        
         socket.on("receive-changes",(content)=>{
             isRemoteUpdate=true;
             editor.innerHTML=content;
@@ -113,6 +133,7 @@
                 });
             }, 2000);
         });
+
     </script>
 </body>
 </html>

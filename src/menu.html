@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu | Google Docs Lite</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f6f8fc;
+            --panel: rgba(255, 255, 255, 0.9);
+            --panel-border: rgba(112, 124, 151, 0.18);
+            --text: #172033;
+            --muted: #667085;
+            --blue: #1a73e8;
+            --blue-dark: #185abc;
+            --green: #34a853;
+            --shadow: 0 24px 70px rgba(45, 57, 91, 0.16);
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--text);
+            background:
+                linear-gradient(135deg, rgba(66, 133, 244, 0.10), transparent 35%),
+                linear-gradient(315deg, rgba(52, 168, 83, 0.12), transparent 38%),
+                var(--bg);
+        }
+
+        .page {
+            min-height: 100vh;
+            padding: 28px 20px;
+        }
+
+        .shell {
+            width: min(1120px, 100%);
+            margin: 0 auto;
+            border: 1px solid var(--panel-border);
+            border-radius: 24px;
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 24px 28px;
+            border-bottom: 1px solid rgba(112, 124, 151, 0.12);
+            background: rgba(255, 255, 255, 0.72);
+            /* backdrop-filter: blur(12px); */
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .doc_icon {
+            width: 42px;
+            height: 48px;
+            position: relative;
+            border-radius: 8px;
+            background: #ffffff;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+            flex: 0 0 auto;
+        }
+
+        .doc_icon::before {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 0;
+            border-top: 13px solid #d7e6ff;
+            border-left: 13px solid transparent;
+        }
+
+        .doc_icon::after {
+            content: "";
+            position: absolute;
+            left: 9px;
+            right: 9px;
+            top: 18px;
+            height: 4px;
+            border-radius: 999px;
+            background: var(--blue);
+            box-shadow: 0 10px 0 var(--green), 0 20px 0 #fbbc04;
+        }
+
+        .topbar small {
+            display: block;
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+        .content {
+            padding: 28px;
+        }
+
+        .section_title {
+            margin-bottom: 18px;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+
+        .menu_grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .menu_card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+            min-height: 128px;
+            padding: 22px;
+            border: 1px solid rgba(112, 124, 151, 0.16);
+            border-radius: 18px;
+            background: #ffffff;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 12px 30px rgba(20, 34, 66, 0.06);
+            transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+        }
+
+        .menu_card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(26, 115, 232, 0.28);
+            box-shadow: 0 18px 38px rgba(20, 34, 66, 0.10);
+        }
+
+        .menu_card:focus-visible {
+            outline: 3px solid rgba(26, 115, 232, 0.28);
+            outline-offset: 2px;
+        }
+
+        .menu_icon {
+            width: 56px;
+            height: 56px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 auto;
+            border-radius: 16px;
+            background: linear-gradient(140deg, rgba(26, 115, 232, 0.12), rgba(52, 168, 83, 0.12));
+            color: var(--blue);
+        }
+
+        .menu_icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: currentColor;
+        }
+
+        .menu_text h2 {
+            font-size: 18px;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .menu_text p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .open_card .menu_icon {
+            color: var(--green);
+        }
+
+        @media (max-width: 720px) {
+            .topbar,
+            .content {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .menu_grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="shell" aria-label="Documents menu">
+            <header class="topbar">
+                <div class="brand">
+                    <span class="doc_icon" aria-hidden="true"></span>
+                    <div>
+                        <div>Google Docs Lite</div>
+                        <small>Your document hub</small>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content">
+                <h1 class="section_title">Choose an option</h1>
+
+                <div class="menu_grid">
+                    <a class="menu_card open_card" href="#" onclick="loadDocuments(); return false;">
+                        <span class="menu_icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 5h16"></path>
+                                <path d="M4 12h16"></path>
+                                <path d="M4 19h10"></path>
+                            </svg>
+                        </span>
+                        <span class="menu_text">
+                            <h2>Open Documents</h2>
+                            <p>Browse and continue working on existing files.</p>
+                        </span>
+                    </a>
+
+                    <a class="menu_card create_card" href="#" onclick="createDocument();return false;">
+                        <span class="menu_icon" aria-hidden="true" style="color:#1a73e8;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round">
+                                <path d="M12 5v14"></path>
+                                <path d="M5 12h14"></path>
+                            </svg>
+                        </span>
+                        <span class="menu_text">
+                            <h2>Create New Document</h2>
+                            <p>Start a fresh document with one tap.</p>
+                        </span>
+                    </a>
+                </div>
+
+                <div id="doc_grid">
+                    
+                </div>
+            </div>
+        </section>
+    </main>
+    <script>
+        async function loadDocuments() {
+            try {
+                const response = await fetch("/documents");
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    throw new Error(data.message || "Request failed.");
+                }
+
+                const grid = document.getElementById("doc_grid");
+                const documents = Array.isArray(data.documents) ? data.documents : [];
+
+                if (documents.length === 0) {
+                    grid.innerHTML = '<div class="empty_state">No documents found.</div>';
+                    return;
+                }
+
+                grid.innerHTML = documents.map((doc) => `
+                    <a class="menu_card" href="/?id=${doc._id}">
+                        <span class="menu_icon" aria-hidden="true" style="color:#1a73e8;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M7 3h7l5 5v13H7z"></path>
+                                <path d="M14 3v5h5"></path>
+                            </svg>
+                        </span>
+                        <span class="menu_text">
+                            <h2>${doc.title || "Untitled Document"}</h2>
+                            <p>Created: ${doc.created_at ? new Date(doc.created_at).toLocaleString() : "N/A"}</p>
+                            <p>Updated: ${doc.updated_at ? new Date(doc.updated_at).toLocaleString() : "N/A"}</p>
+                        </span>
+                    </a>
+                `).join("");
+            }
+            catch (error) {
+                const grid = document.getElementById("doc_grid");
+                grid.innerHTML = `<div class="empty_state">${error.message}</div>`;
+            }
+        }
+        async function createDocument(){
+
+            const title = prompt("Enter document title");
+
+            if(!title) return;
+
+            const response = await fetch("/document",{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    title,
+                    content:""
+                })
+            });
+
+            const data = await response.json();
+
+            if(response.ok){
+                window.location.href = "/?id=" + data.newDoc._id;
+            }
+        }
+    </script>
+</body>
+</html>

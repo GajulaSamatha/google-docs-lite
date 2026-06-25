@@ -3,6 +3,7 @@ require('dotenv').config();
 
 const mongoose=require('mongoose');
 const Document=require('./models/Document');
+const User = require('./models/User');
 
 const connectionString= process.env.MONGO_URI;
 
@@ -18,24 +19,23 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const cookieParser=require('cookie-parser');
 
+app.use(cookieParser());
+app.use(express.json());
 
 
 app.get('/',(req,res)=>{
-    res.sendFile(__dirname + "/index.html");
+    res.sendFile(__dirname + "/src/login.html");
 });
 
-app.get('/test',(req,res)=>{
-   res.send("test route working");
-});
-
-app.use(express.json());
-
-app.post('/document',async (req,res)=>{
+app.post('/document',auth,async (req,res)=>{
     try{
-        const {title,content,owner} = req.body;
-        if(!owner) {
-            return res.status(400).json({message:"Owner is required."});
+        const {title,content} = req.body;
+        if (!title || title.trim() === "") {
+            return res.status(400).json({
+                message: "Title is required"
+            });
         }
+        const owner = req.userId;
 
         const newDoc=new Document({
             title,content,owner
@@ -48,7 +48,7 @@ app.post('/document',async (req,res)=>{
     }
 });
 
-app.get('/document/:id', async (req,res)=>{
+app.get('/document/:id',auth, async (req,res)=>{
     try{
         const id=req.params.id;
         if(!id) return res.status(400).json({message:"Error"});
@@ -63,7 +63,7 @@ app.get('/document/:id', async (req,res)=>{
 });
 
 //auto-save
-app.put("/document/:id",async(req,res)=>{
+app.put("/document/:id",auth,async(req,res)=>{
     try{
         const id=req.params.id;
         const {title,content} =req.body;
@@ -170,6 +170,104 @@ socketObject.on("connection",(socket)=>{
         }
 
     });
+});
+
+//authentication
+
+//middleware for userId
+function auth(req,res,next){
+    try{
+    const token=req.cookies.token;
+    if(!token) return res.status(401).json({message:"Please login"});
+    const decoded=jwt.verify(token,process.env.SECRETE_KEY);
+    req.userId=decoded.userId;
+    next();//passes same req and res objects to the handler called this auth
+    }
+    catch(error){
+        return res.status(401).json({message:"Invalid or expired token"});
+    }
+}
+
+app.use(express.urlencoded({ extended: true }));
+
+app.get('/register',(req,res)=>{
+    res.sendFile(__dirname+"/src/register.html");
+});
+app.get('/login',(req,res)=>{
+    res.sendFile(__dirname+"/src/login.html");
+});
+
+app.post("/register", async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: "Missing required fields!!" });
+        }
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(409).json({ message: "Email already exists!!" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 8);
+
+        const newUser = new User({
+            name,
+            email,
+            password: hashedPassword
+        });
+
+        await newUser.save();
+
+        return res.status(201).json({ message: "Registration Successful!!" });
+    }
+    catch (err) {
+        return res.status(500).json({message:"Server Error. Try again!!"});
+    }
+});
+//login handler
+app.post("/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ message: "Missing required fields!!" });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "Email not found!!" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: "Incorrect details!!" });
+        }
+
+        //creating cookie with jwt token
+        const user_id=user._id;
+        const token = jwt.sign(
+            {userId: user_id},
+            process.env.SECRETE_KEY
+        );
+        return res.cookie("token",token,{httpOnly: true}).status(200).json({ message: "Login successful!!" });
+    }
+    catch (error) {
+        console.error("Login error:", error);
+        return res.status(500).json({ message: "Server Error. Try again!!" });
+    }
+});
+
+app.get("/documents",auth,async(req,res)=>{
+    try{
+        const userId= req.userId;
+        const documents= await Document.find({owner:userId});
+        return res.status(200).json({documents});
+    }
+    catch(error){
+        return res.status(500).json({message:"Server Error!!"});
+    }
 });
 server.listen(port,()=>{
     console.log({message:"Server is running"});

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | Google Docs Lite</title>
+    <title>Login | Google Docs Lite</title>
     <style>
         * {
             box-sizing: border-box;
@@ -42,7 +42,6 @@
         }
 
         .brand_panel {
-            position: relative;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -117,7 +116,7 @@
             background: #ffffff;
         }
 
-        #register_form {
+        #login_form {
             width: 100%;
         }
 
@@ -244,20 +243,20 @@
             transform: translateY(0);
         }
 
-        .signin_text {
+        .register_text {
             margin-top: 20px;
             color: #667085;
             font-size: 14px;
             text-align: center;
         }
 
-        .signin_text a {
+        .register_text a {
             color: #1a73e8;
             font-weight: 700;
             text-decoration: none;
         }
 
-        .signin_text a:hover {
+        .register_text a:hover {
             text-decoration: underline;
         }
 
@@ -300,79 +299,60 @@
 </head>
 <body>
     <main id="container">
-        <section class="auth_shell" aria-label="Registration">
+        <section class="auth_shell" aria-label="Login">
             <div class="brand_panel">
                 <div class="brand_mark">
                     <span class="doc_icon" aria-hidden="true"></span>
                     <span>Google Docs Lite</span>
                 </div>
                 <div class="brand_copy">
-                    <h1>Create, edit, and save your documents.</h1>
-                    <p>Start with a clean workspace for real-time writing and simple document management.</p>
+                    <h1>Welcome back to your documents.</h1>
+                    <p>Log in to continue writing, editing, and keeping your work in sync.</p>
                 </div>
             </div>
 
             <div class="form_panel">
-                <form id="register_form">
+                <form id="login_form">
                     <fieldset>
                         <legend>
-                            <span class="form_title">Create account</span>
-                            <span class="form_subtitle">Enter your details to register.</span>
+                            <span class="form_title">Login</span>
+                            <span class="form_subtitle">Enter your email and password.</span>
                         </legend>
 
                         <p id="form_message" class="form_message" aria-live="polite"></p>
 
                         <div class="input_group">
-                            <label for="name">name</label>
-                            <input name="name" type="text" id="name" autocomplete="name" required aria-describedby="name_error">
-                            <p id="name_error" class="error_message" aria-live="polite"></p>
-                        </div>
-
-                        <div class="input_group">
-                            <label for="email">Email address</label>
+                            <label for="email">Email</label>
                             <input name="email" type="email" id="email" autocomplete="email" required aria-describedby="email_error">
                             <p id="email_error" class="error_message" aria-live="polite"></p>
                         </div>
 
                         <div class="input_group">
                             <label for="password">Password</label>
-                            <input name="password" type="password" id="password" autocomplete="new-password" required aria-describedby="password_error">
+                            <input name="password" type="password" id="password" autocomplete="current-password" required aria-describedby="password_error">
                             <p id="password_error" class="error_message" aria-live="polite"></p>
                         </div>
 
-                        <button type="submit">Register</button>
-                        <p class="signin_text">Already have an account? <a href="/login">Login</a></p>
+                        <button type="submit">Login</button>
+                        <p class="register_text">Do not have an account? <a href="/register">Create one</a></p>
                     </fieldset>
                 </form>
             </div>
         </section>
     </main>
     <script>
-        const form = document.getElementById("register_form");
+        const form = document.getElementById("login_form");
         const formMessage = document.getElementById("form_message");
         const fields = {
-            name: document.getElementById("name"),
             email: document.getElementById("email"),
             password: document.getElementById("password")
         };
 
         const validators = {
-            name(value) {
-                const trimmedValue = value.trim();
-
-                if (!trimmedValue) return "name is required.";
-                if (trimmedValue.length < 3) return "name must be at least 3 characters.";
-                if (trimmedValue.length > 20) return "name must be 20 characters or less.";
-                if (!/^[a-zA-Z0-9_]+$/.test(trimmedValue)) {
-                    return "Use only letters, numbers, and underscores.";
-                }
-
-                return "";
-            },
             email(value) {
                 const trimmedValue = value.trim();
 
-                if (!trimmedValue) return "Email address is required.";
+                if (!trimmedValue) return "Email is required.";
                 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedValue)) {
                     return "Enter a valid email address.";
                 }
@@ -382,9 +362,6 @@
             password(value) {
                 if (!value) return "Password is required.";
                 if (value.length < 8) return "Password must be at least 8 characters.";
-                if (!/[A-Z]/.test(value)) return "Add at least one uppercase letter.";
-                if (!/[a-z]/.test(value)) return "Add at least one lowercase letter.";
-                if (!/[0-9]/.test(value)) return "Add at least one number.";
 
                 return "";
             }
@@ -430,31 +407,29 @@
                 return;
             }
 
-            fetch("/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: fields.name.value.trim(),
+            fetch("/login",{
+                method:"POST",
+                headers: {"Content-Type":"application/json"},
+                body:JSON.stringify({
                     email: fields.email.value.trim(),
                     password: fields.password.value
                 })
             })
-            .then(async (response) => {
+            .then(async(response)=>{
                 const data = await response.json().catch(() => ({}));
-
-                if (!response.ok) {
-                    throw new Error(data.message || "Registration failed.");
+                if(!response.ok){
+                    throw new Error(data.message || "Login failed.");
                 }
-
-                formMessage.className = "form_message success";
-                formMessage.textContent = data.message || "Registration details look good.";
-                form.reset();
+                setTimeout(() => {
+                    window.location.href = "/menu.html";
+                }, 800);
             })
-            .catch((error) => {
-                console.error("Register error:", error);
+            .catch((error)=>{
+                console.error("Login error:", error);
                 formMessage.className = "form_message error";
-                formMessage.textContent = error.message || "Registration failed.";
-            });
+                formMessage.textContent = error.message || "Login failed.";
+            })
+            
         });
     </script>
 </body>
